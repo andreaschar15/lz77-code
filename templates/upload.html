@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>big pats</title>
+</head>
+<body>
+    <h1>upload an image pwease</h1>
+    <form method="POST" action="/compress" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required>
+        <input type="submit" value="Upload">
+    </form>
+    {% if filename %}
+        <h3>Uploaded: {{ filename }}</h3>
+        <img src="{{ url_for('static', filename='uploads/' + filename) }}" style="max-width: 300px;">
+    {% endif %}
+</body>
+</html>
+
