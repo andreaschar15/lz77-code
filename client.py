@@ -1,8 +1,17 @@
-from flask import Flask, request, render_template, redirect, url_for, jsonify
+from flask import Flask, request, redirect, url_for, render_template
+import tempfile
+import shutil
+import re
+import json
 import numpy as np
 import cv2
+import os
+import sys
+import subprocess
+from lz77 import compress
 
 app = Flask(__name__)
+
 
 def image2bstream(image):
     _, enc_img = cv2.imencode('.png', image)
@@ -15,18 +24,22 @@ def index():
 @app.route("/compress", methods=['POST','GET'])
 def compress_img():
     # gets the image filepath
-    img_path = request.files['image']
+    file = request.files['image']
 
     # converst it to numpy array
-    filestr = img_path.read()
+    filestr = file.read()
     npimg = np.frombuffer(filestr, np.uint8)
     img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
 
     imginbytes = image2bstream(img)
-    print(len(imginbytes))
-    #print(str(imginbytes))
-    return str(imginbytes)
 
+    #sage_script = os.path.join(os.path.dirname(__file__), 'lz77.sage')
+
+    byte_len = len(imginbytes)
+
+    result = compress(imginbytes, byte_len)
+
+    return result
 
 if __name__ == '__main__':
     app.run(debug=True)
